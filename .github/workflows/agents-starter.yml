@@ -1,0 +1,123 @@
+name: agents-starter
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  seed:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Prepare agents structure
+        run: |
+          mkdir -p agents-core/{architect,docs,code,critique} content/{agents,templates}
+
+          cat > agents-core/architect/manifest.json <<'JSON'
+          {
+            "name": "Architect",
+            "role": "system architect",
+            "description": "Агент анализирует и проектирует систему экосистемы, обновляет архитектурные документы и схемы.",
+            "inputs": ["content/0. Управление", "content/4. Системы", "content/contracts"],
+            "outputs": ["artifacts/architect"],
+            "tools": ["text-analyzer", "diagram-builder"],
+            "metrics": ["coherence", "coverage", "clarity"]
+          }
+          JSON
+
+          cat > agents-core/docs/manifest.json <<'JSON'
+          {
+            "name": "Docs",
+            "role": "documentation assistant",
+            "description": "Генерирует и форматирует документацию, поддерживает README и обучающие материалы.",
+            "inputs": ["content", "content/templates"],
+            "outputs": ["artifacts/docs"],
+            "tools": ["markdown-linter", "style-checker"],
+            "metrics": ["readability", "consistency"]
+          }
+          JSON
+
+          cat > agents-core/code/manifest.json <<'JSON'
+          {
+            "name": "Code",
+            "role": "developer agent",
+            "description": "Создаёт и поддерживает кодовые артефакты экосистемы (скрипты, workflows, SDK).",
+            "inputs": ["content/4. Системы", "content/contracts"],
+            "outputs": ["artifacts/code"],
+            "tools": ["codegen", "static-analyzer"],
+            "metrics": ["correctness", "security", "efficiency"]
+          }
+          JSON
+
+          cat > agents-core/critique/manifest.json <<'JSON'
+          {
+            "name": "Critique",
+            "role": "quality reviewer",
+            "description": "Оценивает артефакты и тексты по метрикам качества, формирует отчёты в artifacts/critique.",
+            "inputs": ["content", "artifacts"],
+            "outputs": ["artifacts/critique"],
+            "tools": ["qa-metrics", "review-parser"],
+            "metrics": ["accuracy", "coverage", "clarity"]
+          }
+          JSON
+
+          cat > content/agents/00-Index.md <<'MD'
+          # Индекс ИИ-агентов
+
+          | Агент | Назначение | Входы | Выходы | Манифест |
+          |-------|-------------|--------|---------|----------|
+          | **Architect** | Проектирование системы | `content/0. Управление`, `content/4. Системы` | `artifacts/architect` | `agents-core/architect/manifest.json` |
+          | **Docs** | Документация и обучение | `content`, `content/templates` | `artifacts/docs` | `agents-core/docs/manifest.json` |
+          | **Code** | Код и интеграции | `content/4. Системы`, `content/contracts` | `artifacts/code` | `agents-core/code/manifest.json` |
+          | **Critique** | Проверка качества | `content`, `artifacts` | `artifacts/critique` | `agents-core/critique/manifest.json` |
+          MD
+
+          cat > content/templates/Agent-Template.md <<'MD'
+          # Паспорт агента: {{AgentName}}
+
+          ## Роль
+          {{Описание роли агента и его миссия в экосистеме.}}
+
+          ## Входы
+          - {{Пути к данным или разделам content/}}
+
+          ## Выходы
+          - {{Папки в artifacts/, куда агент пишет результаты}}
+
+          ## Инструменты
+          - {{Используемые инструменты (SDK, MCP, Actions)}}
+
+          ## Метрики качества
+          | Метрика | Значение/Комментарий |
+          |---------|----------------------|
+          | coherence | — |
+          | coverage  | — |
+          | readability | — |
+          | correctness | — |
+
+          ## История изменений
+          | Дата | Версия | Описание |
+          |------|--------|----------|
+          | {{YYYY-MM-DD}} | 0.1 | Первое создание паспорта |
+          MD
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          title: 'feat(agents): seed agents-core manifests + content/agents index + template'
+          body: |
+            Добавлен стартовый каркас ИИ-агентов:
+            - agents-core/*/manifest.json
+            - content/agents/00-Index.md
+            - content/templates/Agent-Template.md
+
+            После merge рекомендуем запустить repo-inventory для обновления artifacts/inventories/repo_inventory.tsv.
+          commit-message: 'feat(agents): seed agents-core + index + template'
+          branch: 'feat/agents-starter'
+          base: 'main'
+          delete-branch: true
