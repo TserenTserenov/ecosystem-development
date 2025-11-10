@@ -1,0 +1,86 @@
+name: move-0-management
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  move:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup git identity (bot)
+        run: |
+          git config user.name "chatgpt-bot"
+          git config user.email "chatgpt-bot@users.noreply.github.com"
+          git config core.quotepath false
+
+      - name: Debug list 0. Управление
+        run: |
+          if [ -d "0. Управление" ]; then
+            ls -la "0. Управление"
+          else
+            echo "No '0. Управление' at repo root"
+          fi
+
+      - name: Move residuals from 0. Управление/ to content/0. Управление/
+        id: move
+        shell: bash
+        run: |
+          set -e
+          SRC="0. Управление"
+          DST="content/0. Управление"
+          mkdir -p "$DST"
+
+          changed=false
+          if [ -d "$SRC" ]; then
+            # переносим все элементы верхнего уровня внутри 0. Управление/
+            # безопасно для кириллицы и пробелов
+            while IFS= read -r -d '' item; do
+              echo "git mv: $item -> $DST/"
+              git mv -k "$item" "$DST/" || true
+              changed=true
+            done < <(find "$SRC" -mindepth 1 -maxdepth 1 -print0)
+
+            # если папка-источник опустела, удаляем её
+            if [ -d "$SRC" ] && [ -z "$(ls -A "$SRC")" ]; then
+              echo "Remove empty dir: $SRC"
+              rmdir "$SRC" || true
+            fi
+          else
+            echo "Nothing to move: $SRC not found"
+          fi
+
+          echo "---- git status ----"
+          git status --porcelain || true
+
+          if git status --porcelain | grep -q . ; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            git add -A
+            git commit -m "refactor(content): move residuals from 0. Управление into content/0. Управление/"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create Pull Request
+        if: steps.move.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          title: 'refactor(content): move residuals from 0. Управление into content/'
+          body: |
+            Automated move of remaining files from `0. Управление/` to `content/0. Управление/`.
+            After merge, run repo-inventory to refresh `artifacts/inventories/repo_inventory.tsv`.
+          commit-message: 'refactor(content): move residuals from 0. Управление into content/0. Управление/'
+          branch: 'chore/move-0-management'
+          base: 'main'
+          delete-branch: true
+
+      - name: No changes detected (skip PR)
+        if: steps.move.outputs.changed != 'true'
+        run: echo "Nothing to move. Skipping PR."
