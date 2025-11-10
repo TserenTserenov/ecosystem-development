@@ -1,0 +1,88 @@
+name: move-to-content
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  move:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup git identity (bot)
+        run: |
+          git config user.name "chatgpt-bot"
+          git config user.email "chatgpt-bot@users.noreply.github.com"
+          git config core.quotepath false
+
+      - name: Create branch
+        id: branch
+        run: |
+          BRANCH="chore/move-content-$(date +%s)"
+          git checkout -b "$BRANCH"
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+
+      - name: Ensure target root exists
+        run: mkdir -p "content"
+
+      - name: Move top-level sections 0–4 into content/
+        shell: bash
+        run: |
+          set -e
+          moved=0
+          mv_dir () {
+            src="$1"
+            if [ -d "$src" ]; then
+              echo "Moving: $src -> content/"
+              git mv -k "$src" "content/" || true
+              moved=1
+            else
+              echo "Skip (not found): $src"
+            fi
+          }
+          mv_dir "0. Управление"
+          mv_dir "1. Идеи развития экосистемы"
+          mv_dir "2. Продвижение"
+          mv_dir "3. Библиотека"
+          mv_dir "4. Системы"
+
+          if [ $moved -eq 0 ]; then
+            echo "Nothing to move"
+            exit 0
+          fi
+
+      - name: Commit changes if any
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git add -A
+            git commit -m "refactor(content): move sections 0–4 into content/"
+          else
+            echo "Nothing to commit"
+          fi
+
+      - name: Push branch
+        if: always()
+        run: |
+          BRANCH="${{ steps.branch.outputs.branch }}"
+          git push -u origin "$BRANCH"
+
+      - name: Open Pull Request
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          BRANCH: ${{ steps.branch.outputs.branch }}
+        run: |
+          title='refactor(content): move sections 0–4 into content/'
+          body='Automated move via workflow. After merge, run repo-inventory to refresh artifacts/inventories/repo_inventory.tsv.'
+          curl -s -X POST \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${REPO}/pulls" \
+            -d "{\"title\":\"${title}\",\"head\":\"${BRANCH}\",\"base\":\"main\",\"body\":\"${body}\"}"
