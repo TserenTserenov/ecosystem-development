@@ -29,60 +29,37 @@ jobs:
           echo "branch=$BRANCH" >> $GITHUB_OUTPUT
 
       - name: Ensure target root exists
-        run: mkdir -p "content"
+        run: mkdir -p content
 
-      - name: Move top-level sections 0–4 into content/
+      - name: Move top-level sections 0–4 into content/ (robust)
         shell: bash
         run: |
           set -e
-          moved=0
-          mv_dir () {
-            src="$1"
-            if [ -d "$src" ]; then
-              echo "Moving: $src -> content/"
-              git mv -k "$src" "content/" || true
-              moved=1
-            else
-              echo "Skip (not found): $src"
+          mkdir -p content
+          # переносим только ТОП-уровень, начинающийся на "[0-4]. "
+          git ls-tree --name-only HEAD | grep -E '^[0-4]\. ' | while IFS= read -r PATH; do
+            if [ -d "$PATH" ]; then
+              echo "Moving dir: $PATH -> content/"
+              git mv -k "$PATH" "content/" || true
             fi
-          }
-          mv_dir "0. Управление"
-          mv_dir "1. Идеи развития экосистемы"
-          mv_dir "2. Продвижение"
-          mv_dir "3. Библиотека"
-          mv_dir "4. Системы"
-
-          if [ $moved -eq 0 ]; then
+          done
+          if ! git status --porcelain | grep -q . ; then
             echo "Nothing to move"
             exit 0
           fi
-
-      - name: Commit changes if any
-        run: |
-          if [ -n "$(git status --porcelain)" ]; then
-            git add -A
-            git commit -m "refactor(content): move sections 0–4 into content/"
-          else
-            echo "Nothing to commit"
-          fi
+          git add -A
+          git commit -m "refactor(content): move sections 0–4 into content/"
 
       - name: Push branch
-        if: always()
         run: |
           BRANCH="${{ steps.branch.outputs.branch }}"
           git push -u origin "$BRANCH"
 
-      - name: Open Pull Request
-        if: always()
-        env:
-          GH_TOKEN: ${{ github.token }}
-          REPO: ${{ github.repository }}
-          BRANCH: ${{ steps.branch.outputs.branch }}
-        run: |
-          title='refactor(content): move sections 0–4 into content/'
-          body='Automated move via workflow. After merge, run repo-inventory to refresh artifacts/inventories/repo_inventory.tsv.'
-          curl -s -X POST \
-            -H "Authorization: Bearer ${GH_TOKEN}" \
-            -H "Accept: application/vnd.github+json" \
-            "https://api.github.com/repos/${REPO}/pulls" \
-            -d "{\"title\":\"${title}\",\"head\":\"${BRANCH}\",\"base\":\"main\",\"body\":\"${body}\"}"
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          title: 'refactor(content): move sections 0–4 into content/'
+          body: 'Automated move via workflow. After merge, run repo-inventory to refresh artifacts/inventories/repo_inventory.tsv.'
+          branch: ${{ steps.branch.outputs.branch }}
+          base: main
+          delete-branch: true
