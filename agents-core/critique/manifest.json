@@ -1,0 +1,9 @@
+{
+  "name": "Critique",
+  "role": "quality reviewer",
+  "description": "Оценивает артефакты и тексты по метрикам качества, формирует отчёты в artifacts/critique.",
+  "inputs": ["content", "artifacts"],
+  "outputs": ["artifacts/critique"],
+  "tools": ["qa-metrics", "review-parser"],
+  "metrics": ["accuracy", "coverage", "clarity"]
+}
