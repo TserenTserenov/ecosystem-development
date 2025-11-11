@@ -1,0 +1,67 @@
+name: move-to-content
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  move:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup git identity (bot)
+        run: |
+          git config user.name "chatgpt-bot"
+          git config user.email "chatgpt-bot@users.noreply.github.com"
+          git config core.quotepath false
+
+      - name: Debug list root entries (top-level)
+        run: ls -la
+
+      - name: Move top-level sections 0-4 into content (robust)
+        id: move
+        shell: bash
+        run: |
+          set -e
+          mkdir -p content
+          # перебираем ТОП-уровень и переносим каталоги, начинающиеся с "0. ", "1. ", ..., "4. "
+          changed=0
+          while IFS= read -r entry; do
+            if [[ "$entry" =~ ^[0-4]\.\  ]] && [ -d "$entry" ]; then
+              echo "Moving dir: $entry -> content/"
+              git mv -k "$entry" "content/" || true
+              changed=1
+            fi
+          done < <(ls -1)
+
+          echo "---- git status (after mv) ----"
+          git status --porcelain || true
+
+          if git status --porcelain | grep -q . ; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create Pull Request
+        if: steps.move.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          title: 'refactor(content): move sections 0–4 into content/'
+          body: |
+            Automated move via workflow.
+            After merge, run repo-inventory to refresh artifacts/inventories/repo_inventory.tsv.
+          commit-message: 'refactor(content): move sections 0–4 into content/'
+          branch: 'chore/move-content'
+          base: 'main'
+          delete-branch: true
+
+      - name: No changes detected (skip PR)
+        if: steps.move.outputs.changed != 'true'
+        run: echo "Nothing to move. Skipping PR."

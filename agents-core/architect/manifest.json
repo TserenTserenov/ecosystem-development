@@ -1,0 +1,9 @@
+{
+  "name": "Architect",
+  "role": "system architect",
+  "description": "Агент анализирует и проектирует систему экосистемы, обновляет архитектурные документы и схемы.",
+  "inputs": ["content/0. Управление", "content/4. Системы", "content/contracts"],
+  "outputs": ["artifacts/architect"],
+  "tools": ["text-analyzer", "diagram-builder"],
+  "metrics": ["coherence", "coverage", "clarity"]
+}

@@ -1,0 +1,9 @@
+{
+  "name": "Docs",
+  "role": "documentation assistant",
+  "description": "Генерирует и форматирует документацию, поддерживает README и обучающие материалы.",
+  "inputs": ["content", "content/templates"],
+  "outputs": ["artifacts/docs"],
+  "tools": ["markdown-linter", "style-checker"],
+  "metrics": ["readability", "consistency"]
+}

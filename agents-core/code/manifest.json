@@ -1,0 +1,9 @@
+{
+  "name": "Code",
+  "role": "developer agent",
+  "description": "Создаёт и поддерживает кодовые артефакты экосистемы (скрипты, workflows, SDK).",
+  "inputs": ["content/4. Системы", "content/contracts"],
+  "outputs": ["artifacts/code"],
+  "tools": ["codegen", "static-analyzer"],
+  "metrics": ["correctness", "security", "efficiency"]
+}
