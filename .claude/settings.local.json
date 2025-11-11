@@ -25,7 +25,8 @@
       "Bash(.gitignore)",
       "Bash(git stash:*)",
       "Bash(git stash pop:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(git log:*)"
     ],
     "deny": [],
     "ask": []
