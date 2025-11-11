@@ -1,21 +1,22 @@
 name: Build Check Document
 
 on:
-  # Запуск при пуше в основные ветки
-  push:
-    branches:
-      - main
-      - feat/ci-and-ops
-    paths:
-      - 'content/**/*.md'
-      - 'ops/build_check_document.py'
+  # ОТКЛЮЧЕНО: автосборка без AI-анализа не имеет смысла
+  # Запуск при пуше в основные ветки - ОТКЛЮЧЕН
+  # push:
+  #   branches:
+  #     - main
+  #     - feat/ci-and-ops
+  #   paths:
+  #     - 'content/**/*.md'
+  #     - 'ops/build_check_document.py'
 
-  # Ручной запуск
+  # Только ручной запуск
   workflow_dispatch:
 
-  # Еженедельный запуск (каждый понедельник в 9:00 UTC)
-  schedule:
-    - cron: '0 9 * * 1'
+  # Еженедельный запуск - ОТКЛЮЧЕН (без AI-анализа бесполезен)
+  # schedule:
+  #   - cron: '0 9 * * 1'
 
 jobs:
   build-check-document:
