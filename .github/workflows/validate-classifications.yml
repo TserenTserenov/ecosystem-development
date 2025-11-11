@@ -1,0 +1,62 @@
+name: Validate Classifications
+
+on:
+  # Запуск при пуше в основные ветки
+  push:
+    branches:
+      - main
+      - feat/**
+    paths:
+      - 'content/0. Управление/0.6. Структура этого хранилища.md'
+      - 'content/0. Управление/0.7. Классификация документов и теги.md'
+      - 'ops/validate_classifications.py'
+
+  # Запуск при pull request
+  pull_request:
+    paths:
+      - 'content/0. Управление/0.6. Структура этого хранилища.md'
+      - 'content/0. Управление/0.7. Классификация документов и теги.md'
+      - 'ops/validate_classifications.py'
+
+  # Ручной запуск
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Validate classifications
+        id: validate
+        run: |
+          echo "🔍 Проверка классификации документов..."
+          python3 ops/validate_classifications.py
+
+      - name: Create summary
+        if: always()
+        run: |
+          echo "### 🔍 Результаты валидации классификации" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ $? -eq 0 ]; then
+            echo "✅ Все значения классификации валидны!" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "📋 Допустимые значения определены в документе 0.7" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Найдены невалидные значения классификации" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Пожалуйста, исправьте ошибки в документе 0.6" >> $GITHUB_STEP_SUMMARY
+            echo "Используйте только значения из документа 0.7" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📍 Файл: \`content/0. Управление/0.6. Структура этого хранилища.md\`" >> $GITHUB_STEP_SUMMARY
+          echo "⏰ Время проверки: $(date)" >> $GITHUB_STEP_SUMMARY
