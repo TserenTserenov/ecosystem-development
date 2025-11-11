@@ -220,8 +220,11 @@ def generate_classification_table(documents: List[Dict], manual_edits: Dict) -> 
     - AI-предложения: <mark>value</mark> (желтый фон)
     - Ручные правки: <span style="background-color: lightgreen">value</span> (зеленый фон)
 
-    Если документ есть в manual_edits, AI НЕ запускается для него вообще.
-    Только человек может изменить ручные правки.
+    НОВАЯ ЛОГИКА: Работает на уровне ЯЧЕЕК, а не строк!
+    - AI всегда запускается для получения предложений
+    - Для каждой ячейки проверяется: есть ли ручная правка?
+    - Зеленым выделяется только та ячейка, которую изменил человек
+    - Остальные ячейки в строке - желтые (AI-предложения)
     """
     table_lines = []
 
@@ -232,49 +235,44 @@ def generate_classification_table(documents: List[Dict], manual_edits: Dict) -> 
     for idx, doc in enumerate(documents, 1):
         doc_path = doc['path']
 
-        # КРИТИЧЕСКИ ВАЖНО: Проверяем наличие ручных правок ПЕРВЫМ делом
-        # Если есть ручные правки - AI вообще не запускается!
-        if doc_path in manual_edits:
-            # ✅ РУЧНАЯ ПРАВКА - используем ее БЕЗ изменений
-            classification = manual_edits[doc_path]
-            is_manual = True
-        else:
-            # 🤖 AI-классификация (только если НЕТ ручных правок)
-            try:
-                with open(doc['full_path'], 'r', encoding='utf-8') as f:
-                    content = f.read()
-            except:
-                content = ""
+        # AI всегда запускается для получения предложений
+        try:
+            with open(doc['full_path'], 'r', encoding='utf-8') as f:
+                content = f.read()
+        except:
+            content = ""
 
-            classification = classify_document_with_ai(doc_path, content)
-            is_manual = False
+        classification = classify_document_with_ai(doc_path, content)
 
-        # Форматируем значения:
-        # - Ручные правки (человек) = ЗЕЛЕНЫЙ фон
-        # - AI-предложения = ЖЕЛТЫЙ фон
-        def format_value(value):
-            if is_manual:
-                # ✅ ЗЕЛЕНЫЙ = подтверждено человеком, AI НЕ ТРОГАЕТ
-                return f'<span style="background-color: lightgreen">{value}</span>'
+        # Форматируем значения на уровне ЯЧЕЕК:
+        # - Проверяем для КАЖДОЙ ячейки: есть ли ручная правка?
+        # - Зеленый = ручная правка для ЭТОЙ ячейки
+        # - Желтый = AI-предложение для ЭТОЙ ячейки
+        def format_value(axis, ai_value):
+            # Проверяем есть ли ручная правка для этой конкретной ячейки
+            if doc_path in manual_edits and axis in manual_edits[doc_path]:
+                # ✅ ЗЕЛЕНЫЙ = эта ячейка изменена человеком, AI НЕ ТРОГАЕТ
+                manual_value = manual_edits[doc_path][axis]
+                return f'<span style="background-color: lightgreen">{manual_value}</span>'
             else:
-                # 🤖 ЖЕЛТЫЙ = предложение AI, человек может изменить
-                return f'<mark>{value}</mark>'
+                # 🤖 ЖЕЛТЫЙ = AI-предложение для этой ячейки
+                return f'<mark>{ai_value}</mark>'
 
-        # Формируем строку таблицы
+        # Формируем строку таблицы (каждая ячейка проверяется отдельно!)
         row = (
             f"| {idx} | {doc['name']} | {doc['folder']} | "
-            f"{format_value(classification['type'])} | "
-            f"{format_value(classification['audience'])} | "
-            f"{format_value(classification['edit_mode'])} | "
-            f"{format_value(classification['layer'])} | "
-            f"{format_value(classification['scope'])} | "
-            f"{format_value(classification['security'])} |"
+            f"{format_value('type', classification['type'])} | "
+            f"{format_value('audience', classification['audience'])} | "
+            f"{format_value('edit_mode', classification['edit_mode'])} | "
+            f"{format_value('layer', classification['layer'])} | "
+            f"{format_value('scope', classification['scope'])} | "
+            f"{format_value('security', classification['security'])} |"
         )
 
         table_lines.append(row)
 
-        # Задержка между API вызовами (если используется AI)
-        if not is_manual and idx % 5 == 0:
+        # Задержка между API вызовами
+        if idx % 5 == 0:
             print(f"  Обработано {idx}/{len(documents)} документов...")
 
     return '\n'.join(table_lines)
