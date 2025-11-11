@@ -173,6 +173,13 @@
   },
   "active": "04cbb09f9ac9a501",
   "lastOpenFiles": [
+    "ops/USAGE.md.tmp.10897.1762885991568",
+    "ops/USAGE_WINDOWS.md",
+    "ops/USAGE_WINDOWS.md.tmp.10897.1762885972138",
+    "ops/manual_classifications.json",
+    "ops/USAGE.md",
+    "ops/USAGE.md.tmp.10897.1762885629168",
+    "ops/save_manual_edits.py.tmp.10897.1762885597171",
     "ops/README_CLASSIFICATION.md",
     "ops/README_CLASSIFICATION.md.tmp.10897.1762885394548",
     "ops/validate_classifications.py.tmp.10897.1762885208036",
@@ -180,10 +187,6 @@
     "ops/save_manual_edits.py.tmp.10897.1762885195541",
     "ops/classify_documents.py.tmp.10897.1762885160186",
     "content/0. Управление/sedsHnQzL",
-    "ops/validate_classifications.py.tmp.10897.1762884842490",
-    "ops/validate_classifications.py.tmp.10897.1762884831897",
-    "ops/validate_classifications.py.tmp.10897.1762884820689",
-    "ops/validate_classifications.py",
     "content/0. Управление/0.5. Проверочный документ.md",
     "content/0. Управление/0.91. Структура проверочного документа.md",
     "conflict-files-obsidian-git.md",
@@ -205,9 +208,6 @@
     "content/4. Системы/4.6. Система учета активностей (хаб активностей).md",
     "content/4. Системы/4.5. Проводник по персональному маршруту.md",
     "content/4. Системы/4.4. Платформа обучения.md",
-    "content/4. Системы/4.3. Клуб.md",
-    "content/4. Системы/4.11. Цифровой двойник.md",
-    "content/4. Системы/4.2. Операционная система ИИ-платформы.md",
-    "content/4. Системы/4.10. Финансовая система токеномики.md"
+    "content/4. Системы/4.3. Клуб.md"
   ]
 }
