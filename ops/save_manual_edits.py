@@ -69,8 +69,19 @@ def save_manual_edits_from_table():
 
     ВАЖНО: Сохраняются только значения БЕЗ <mark> тегов!
     """
+    # Проверяем, что скрипт запущен из корневой директории
     if not STRUCTURE_DOC.exists():
         print(f"❌ Документ не найден: {STRUCTURE_DOC}")
+        print()
+        print("⚠️  Возможно, скрипт запущен НЕ из корневой директории проекта!")
+        print()
+        print("📍 Правильно:")
+        print(f"   cd {BASE_DIR}")
+        print("   python3 ops/save_manual_edits.py")
+        print()
+        print("❌ Неправильно:")
+        print(f"   cd {BASE_DIR}/ops")
+        print("   python3 save_manual_edits.py")
         return
 
     with open(STRUCTURE_DOC, 'r', encoding='utf-8') as f:
