@@ -173,6 +173,8 @@
   },
   "active": "04cbb09f9ac9a501",
   "lastOpenFiles": [
+    "ops/README_CLASSIFICATION.md",
+    "ops/README_CLASSIFICATION.md.tmp.10897.1762885394548",
     "ops/validate_classifications.py.tmp.10897.1762885208036",
     "ops/save_manual_edits.py",
     "ops/save_manual_edits.py.tmp.10897.1762885195541",
@@ -182,9 +184,7 @@
     "ops/validate_classifications.py.tmp.10897.1762884831897",
     "ops/validate_classifications.py.tmp.10897.1762884820689",
     "ops/validate_classifications.py",
-    "ops/validate_classifications.py.tmp.10897.1762884792449",
     "content/0. Управление/0.5. Проверочный документ.md",
-    "ops/classify_documents.py",
     "content/0. Управление/0.91. Структура проверочного документа.md",
     "conflict-files-obsidian-git.md",
     "content/0. Управление/0.6. Структура этого хранилища.md",
