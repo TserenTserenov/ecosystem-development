@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "content/0. Управление/0.7. Классификация документов и теги.md",
+                "file": "content/0. Управление/0.5. Проверочный документ.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "0.7. Классификация документов и теги"
+              "title": "0.5. Проверочный документ"
             }
           }
         ]
@@ -173,8 +173,10 @@
   },
   "active": "04cbb09f9ac9a501",
   "lastOpenFiles": [
-    "conflict-files-obsidian-git.md",
+    "content/0. Управление/0.91. Структура проверочного документа.md",
+    "content/0. Управление/0.6. Структура этого хранилища.md",
     "content/0. Управление/0.7. Классификация документов и теги.md",
+    "conflict-files-obsidian-git.md",
     "ops/build_check_document.py.tmp.10897.1762880388589",
     "content/0. Управление/0.5. Проверочный документ.md",
     "ops/build_check_document.py.tmp.10897.1762880339206",
@@ -186,7 +188,6 @@
     "ops/build_check_document.py.tmp.10897.1762879838084",
     "ops/build_check_document.py.tmp.10897.1762879828034",
     "ops/build_check_document.py.tmp.10897.1762879815503",
-    "content/0. Управление/0.91. Структура проверочного документа.md",
     "ops/SETUP_GUIDE.md",
     "content/0. Управление/0.3. Решения.md",
     "content/0. Управление/0.9. Разное.md",
@@ -207,7 +208,6 @@
     "content/4. Системы/4.11. Цифровой двойник.md",
     "content/4. Системы/4.2. Операционная система ИИ-платформы.md",
     "content/4. Системы/4.10. Финансовая система токеномики.md",
-    "content/4. Системы/4.1. Список подсистем.md",
-    "content/3. Библиотека/3.3. Понятия.md"
+    "content/4. Системы/4.1. Список подсистем.md"
   ]
 }
