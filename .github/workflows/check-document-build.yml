@@ -1,22 +1,27 @@
 name: Build Check Document
 
 on:
-  # ОТКЛЮЧЕНО: автосборка без AI-анализа не имеет смысла
-  # Запуск при пуше в основные ветки - ОТКЛЮЧЕН
-  # push:
-  #   branches:
-  #     - main
-  #     - feat/ci-and-ops
-  #   paths:
-  #     - 'content/**/*.md'
-  #     - 'ops/build_check_document.py'
+  # Запуск при пуше в основные ветки (критические изменения контента)
+  push:
+    branches:
+      - main
+      - feat/ci-and-ops
+    paths:
+      - 'content/**/*.md'
+      - 'ops/build_check_document.py'
 
-  # Только ручной запуск
+  # Ручной запуск с возможностью выбора AI-анализа
   workflow_dispatch:
+    inputs:
+      ai_analysis:
+        description: 'Запустить AI-анализ противоречий'
+        required: false
+        type: boolean
+        default: true
 
-  # Еженедельный запуск - ОТКЛЮЧЕН (без AI-анализа бесполезен)
-  # schedule:
-  #   - cron: '0 9 * * 1'
+  # Еженедельный запуск с AI-анализом (каждый понедельник в 9:00 UTC)
+  schedule:
+    - cron: '0 9 * * 1'
 
 jobs:
   build-check-document:
@@ -34,8 +39,26 @@ jobs:
           python-version: '3.11'
 
       - name: Build Check Document
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          python3 ops/build_check_document.py
+          # Определяем нужен ли AI-анализ
+          # - Всегда для schedule
+          # - По выбору для workflow_dispatch
+          # - Опционально для push (если есть API ключ)
+          if [ "${{ github.event_name }}" == "schedule" ]; then
+            echo "📅 Еженедельный запуск - AI-анализ включен"
+            python3 ops/build_check_document.py --ai-analysis
+          elif [ "${{ github.event_name }}" == "workflow_dispatch" ] && [ "${{ github.event.inputs.ai_analysis }}" == "true" ]; then
+            echo "🔧 Ручной запуск с AI-анализом"
+            python3 ops/build_check_document.py --ai-analysis
+          elif [ -n "$OPENAI_API_KEY" ]; then
+            echo "🔑 API ключ найден - AI-анализ включен"
+            python3 ops/build_check_document.py --ai-analysis
+          else
+            echo "ℹ️ Базовая сборка без AI-анализа"
+            python3 ops/build_check_document.py
+          fi
 
       - name: Check for changes
         id: check_changes
@@ -66,14 +89,29 @@ jobs:
           branch: ${{ github.ref }}
 
       - name: Create summary
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           echo "### 📊 Результаты сборки Проверочного документа" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Статус изменений
           if [ "${{ steps.check_changes.outputs.changed }}" == "true" ]; then
             echo "✅ Документ обновлен и закоммичен" >> $GITHUB_STEP_SUMMARY
           else
             echo "ℹ️ Изменений не обнаружено" >> $GITHUB_STEP_SUMMARY
           fi
+
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "📍 Файл: \`content/0. Управление/0.5. Проверочный документ.md\`" >> $GITHUB_STEP_SUMMARY
-          echo "⏰ Время сборки: $(date)" >> $GITHUB_STEP_SUMMARY
+
+          # AI-анализ статус
+          if [ "${{ github.event_name }}" == "schedule" ] || [ "${{ github.event.inputs.ai_analysis }}" == "true" ] || [ -n "$OPENAI_API_KEY" ]; then
+            echo "🤖 **AI-анализ:** включен" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "📝 **AI-анализ:** отключен" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📍 **Файл:** \`content/0. Управление/0.5. Проверочный документ.md\`" >> $GITHUB_STEP_SUMMARY
+          echo "⏰ **Время сборки:** $(date)" >> $GITHUB_STEP_SUMMARY
+          echo "🔄 **Триггер:** ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
