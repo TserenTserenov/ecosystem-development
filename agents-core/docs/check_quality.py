@@ -217,6 +217,9 @@ def check_document_structure(file_path: Path) -> Dict:
 def check_document(file_path: Path, content_dir: Path) -> Dict:
     """Комплексная проверка документа"""
 
+    # Resolve абсолютный путь
+    file_path = file_path.resolve()
+
     # Читаем содержимое для расчета читаемости
     with open(file_path, 'r', encoding='utf-8') as f:
         content = f.read()

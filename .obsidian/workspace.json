@@ -188,6 +188,12 @@
   },
   "active": "98a2a3b77de609a2",
   "lastOpenFiles": [
+    "agents-core/docs/check_quality.py.tmp.10897.1762967960768",
+    "artifacts/docs/reviews",
+    "artifacts/docs/drafts/4.13. Тестовая система.md",
+    "artifacts/docs/drafts",
+    "agents-core/docs/README.md",
+    "agents-core/docs/README.md.tmp.10897.1762967939235",
     "agents-core/docs/check_quality.py",
     "agents-core/docs/check_quality.py.tmp.10897.1762967899652",
     "content/4. Системы/4.7. CRM.md",
@@ -211,18 +217,12 @@
     "content/4. Системы/4.6. Система учета активностей (хаб активностей).md",
     "content/4. Системы/4.3. Клуб.md",
     "content/4. Системы/4.2. Операционная система ИИ-платформы.md",
-    "content/4. Системы/4.12. Единое хранилище знаний (Memory Bank).md.tmp.10897.1762967044794",
     "content/4. Системы/4.1. Список подсистем.md",
     "content/4. Системы/4.0. Информация.md",
     "content/0. Управление/0.1. Входящее.md",
     "content/0. Управление/0.0. Информация.md",
     "content/0. Управление/0.6. Структура этого хранилища.md",
-    "ops/validate_classifications.py.tmp.10897.1762964378342",
-    "ops/save_manual_edits.py.tmp.10897.1762964360311",
-    "ops/save_manual_edits.py.tmp.10897.1762964343791",
     "content/0. Управление/0.7. Классификация документов и теги.md",
-    "ops/USAGE_WINDOWS.md",
-    "ops/USAGE.md",
-    "ops/SETUP_GUIDE.md"
+    "ops/USAGE_WINDOWS.md"
   ]
 }
