@@ -173,6 +173,7 @@
   },
   "active": "04cbb09f9ac9a501",
   "lastOpenFiles": [
+    "content/4. Системы/4.12. Единое хранилище знаний (Memory Bank).md",
     "content/0. Управление/0.0. Информация.md",
     "content/0. Управление/0.6. Структура этого хранилища.md",
     "ops/validate_classifications.py.tmp.10897.1762964378342",
@@ -207,7 +208,6 @@
     "github/PULL_REQUEST_TEMPLATE.md",
     "content/4. Системы/4.8. Системы приема оплаты фиатом.md",
     "content/4. Системы/4.9. Биллинг.md",
-    "content/templates/Agent-Template.md",
-    "content/agents/00-Index.md"
+    "content/templates/Agent-Template.md"
   ]
 }
