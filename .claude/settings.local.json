@@ -27,7 +27,9 @@
       "Bash(git stash pop:*)",
       "Bash(find:*)",
       "Bash(git log:*)",
-      "Bash(git restore:*)"
+      "Bash(git restore:*)",
+      "Bash(git config:*)",
+      "Bash(git remote get-url:*)"
     ],
     "deny": [],
     "ask": []
