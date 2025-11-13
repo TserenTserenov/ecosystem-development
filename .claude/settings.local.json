@@ -29,7 +29,14 @@
       "Bash(git log:*)",
       "Bash(git restore:*)",
       "Bash(git config:*)",
-      "Bash(git remote get-url:*)"
+      "Bash(git remote get-url:*)",
+      "Bash(gh auth status:*)",
+      "Bash(ssh-keygen:*)",
+      "Bash(ssh-add:*)",
+      "Bash(git remote set-url:*)",
+      "Bash(ssh:*)",
+      "Bash(ssh-keyscan:*)",
+      "Bash(~/.ssh/known_hosts)"
     ],
     "deny": [],
     "ask": []
