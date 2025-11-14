@@ -1,15 +1,6 @@
 name: Build Check Document
 
 on:
-  # Запуск при пуше в основные ветки (критические изменения контента)
-  push:
-    branches:
-      - main
-      - feat/ci-and-ops
-    paths:
-      - 'content/**/*.md'
-      - 'ops/build_check_document.py'
-
   # Ручной запуск с возможностью выбора AI-анализа
   workflow_dispatch:
     inputs:
